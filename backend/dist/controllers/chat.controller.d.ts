@@ -1,0 +1,5 @@
+import type { Request, Response } from "express";
+export declare const getAllTheUsers: (req: Request, res: Response, next: import("express").NextFunction) => void;
+export declare const getConversations: (req: Request, res: Response, next: import("express").NextFunction) => void;
+export declare const sendMessage: (req: Request, res: Response, next: import("express").NextFunction) => void;
+//# sourceMappingURL=chat.controller.d.ts.map
