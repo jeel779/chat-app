@@ -92,6 +92,7 @@ export const UserScalarFieldEnum = {
 export const MessageScalarFieldEnum = {
     id: 'id',
     content: 'content',
+    image: 'image',
     senderId: 'senderId',
     receiverId: 'receiverId',
     createdAt: 'createdAt'

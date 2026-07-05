@@ -12,14 +12,27 @@ import {
   ListTodo, 
   HelpCircle, 
   LogOut,
-  Home
+  Home,
+  Camera,
+  Loader2
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const Chat = () => {
   const { selectedUser } = useChatStore()
-  const { logout, authUser } = useAuthStore()
+  const { logout, authUser, updateAvatar, isLoading } = useAuthStore()
   const navigate = useNavigate()
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    try {
+      await updateAvatar(file)
+    } catch (error) {
+      // Handled in store
+    }
+  }
 
   const handleLogout = async () => {
     try {
@@ -101,12 +114,39 @@ const Chat = () => {
         {/* Bottom Actions: User Profile & Logout */}
         <div className="flex flex-col items-center gap-4">
           {authUser && (
-            <img 
-              src={authUser.avatar || "/avatar.webp"} 
-              alt={authUser.username} 
-              className="w-10 h-10 object-cover rounded-full border border-slate-200"
-              title={`Logged in as ${authUser.username}`}
-            />
+            <div className="relative group">
+              <label 
+                htmlFor="avatar-upload" 
+                className={`block relative w-11 h-11 rounded-full cursor-pointer overflow-hidden border border-slate-200 shadow-sm transition-all hover:scale-105 ${isLoading ? "pointer-events-none" : ""}`}
+                title="Change Avatar"
+              >
+                <img 
+                  src={authUser.avatar || "/avatar.webp"} 
+                  alt={authUser.username} 
+                  className="w-full h-full object-cover"
+                />
+                
+                {/* Hover overlay with Camera icon */}
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Camera className="w-4 h-4 text-white" />
+                </div>
+
+                {/* Loading spinner overlay */}
+                {isLoading && (
+                  <div className="absolute inset-0 bg-black/65 flex items-center justify-center">
+                    <Loader2 className="w-4 h-4 text-white animate-spin" />
+                  </div>
+                )}
+              </label>
+              <input 
+                type="file" 
+                id="avatar-upload" 
+                accept="image/*" 
+                className="hidden" 
+                onChange={handleAvatarChange}
+                disabled={isLoading}
+              />
+            </div>
           )}
           <button 
             onClick={handleLogout}

@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { checkAuthStatus, signupUser, loginUser, logoutUser } from "../helpers/api-communicator";
 import { io, Socket } from "socket.io-client";
+import { axiosInstance } from "../lib/axios";
+import toast from "react-hot-toast";
 
 export interface User {
   id: string;
@@ -19,6 +21,7 @@ interface AuthStore {
   signup: (username: string, email: string, password: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateAvatar: (avatarFile: File) => Promise<void>;
   connectSocket: () => void;
   disconnectSocket: () => void;
 }
@@ -84,6 +87,31 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       set({ authUser: null, isLoggedIn: false });
     } catch (error) {
       console.error("logout failed:", error);
+      throw error;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  updateAvatar: async (avatarFile: File) => {
+    set({ isLoading: true });
+    try {
+      const formData = new FormData();
+      formData.append("avatar", avatarFile);
+
+      const res = await axiosInstance.put("/user/update-avatar", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (res.data && res.data.data && res.data.data.user) {
+        set({ authUser: res.data.data.user });
+        toast.success("Avatar updated successfully");
+      }
+    } catch (error: any) {
+      console.error("updateAvatar failed:", error);
+      toast.error(error.response?.data?.message || "Failed to update avatar");
       throw error;
     } finally {
       set({ isLoading: false });

@@ -5,7 +5,8 @@ import { useAuthStore } from "./useAuthStore";
 
 interface ChatMessage {
   id: string;
-  content: string;
+  content: string | null;
+  image?: string | null;
   senderId: string;
   receiverId: string;
   createdAt: string;
@@ -25,7 +26,7 @@ interface ChatState {
 
   getUsers: () => Promise<void>;
   getMessages: (userId: string) => Promise<void>;
-  sendMessage: (message: string) => Promise<void>;
+  sendMessage: (message: string, image?: File | null) => Promise<void>;
   subscribeToMessages: () => void;
   unsubscribeFromMessages: () => void;
   setSelectedUser: (user: User | null) => void;
@@ -61,10 +62,26 @@ export const useChatStore = create<ChatState>((set, get) => ({
       set({ isMessagesLoading: false });
     }
   },
-  sendMessage: async (message: string) => {
+  sendMessage: async (message: string, imageFile?: File | null) => {
     const { selectedUser } = get();
     try {
-      const res = await axiosInstance.post(`/chat/${selectedUser?.id}`, { content: message });
+      let res;
+      if (imageFile) {
+        const formData = new FormData();
+        if (message.trim()) {
+          formData.append("content", message.trim());
+        }
+        formData.append("image", imageFile);
+
+        res = await axiosInstance.post(`/chat/${selectedUser?.id}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      } else {
+        res = await axiosInstance.post(`/chat/${selectedUser?.id}`, { content: message.trim() });
+      }
+
       set((state) => ({
         messages: [...state.messages, res.data.data.message],
       }));

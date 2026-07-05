@@ -140,14 +140,24 @@ const ChatContainer = () => {
                 {/* Message Body with timestamp on outer edge */}
                 <div className={`flex items-center gap-2.5 ${isMe ? "flex-row-reverse" : ""}`}>
                   <div
-                    className={`px-4.5 py-3 rounded-2xl text-sm font-medium shadow-sm leading-relaxed
+                    className={`px-4 py-2.5 rounded-2xl text-sm font-medium shadow-sm leading-relaxed flex flex-col gap-2
                       ${isMe
                         ? "bg-[#4b5563] text-white rounded-tr-none"
                         : "bg-[#1e50ff] text-white rounded-tl-none"
                       }
                     `}
                   >
-                    {message.content}
+                    {message.image && (
+                      <img
+                        src={message.image}
+                        alt="Uploaded attachment"
+                        className="rounded-lg max-w-[240px] max-h-[240px] md:max-w-[320px] md:max-h-[320px] object-cover cursor-pointer hover:opacity-90 transition-opacity border border-white/10"
+                        onClick={() => window.open(message.image!, '_blank')}
+                      />
+                    )}
+                    {message.content && (
+                      <p className="whitespace-pre-wrap">{message.content}</p>
+                    )}
                   </div>
 
                   <span className="text-[10px] text-slate-400 font-bold select-none whitespace-nowrap self-end mb-1">

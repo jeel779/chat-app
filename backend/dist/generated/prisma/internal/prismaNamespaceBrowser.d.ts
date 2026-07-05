@@ -50,6 +50,7 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 export declare const MessageScalarFieldEnum: {
     readonly id: "id";
     readonly content: "content";
+    readonly image: "image";
     readonly senderId: "senderId";
     readonly receiverId: "receiverId";
     readonly createdAt: "createdAt";

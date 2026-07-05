@@ -5,6 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { signInSchema, signUpSchema } from "../utils/schemas.js";
+import { uploadOnCloudinary } from "../utils/Cloudinary.js";
 export const registerUser = asyncHandler(async (req, res) => {
     const { email, username, password } = req.body;
     const result = signUpSchema.safeParse(req.body);
@@ -31,6 +32,7 @@ export const registerUser = asyncHandler(async (req, res) => {
             id: true,
             username: true,
             email: true,
+            avatar: true,
         }
     });
     const payload = {
@@ -77,7 +79,8 @@ export const loginUser = asyncHandler(async (req, res) => {
         select: {
             id: true,
             email: true,
-            username: true
+            username: true,
+            avatar: true
         }
     });
     if (!loggedInUser) {
@@ -113,7 +116,8 @@ export const checkAuth = asyncHandler(async (req, res) => {
         select: {
             id: true,
             email: true,
-            username: true
+            username: true,
+            avatar: true
         }
     });
     if (!user) {
@@ -135,5 +139,34 @@ export const logoutUser = asyncHandler(async (req, res) => {
         .status(200)
         .clearCookie("token", options)
         .json(new ApiResponse(200, {}, "User logged Out"));
+});
+export const updateAvatar = asyncHandler(async (req, res) => {
+    const userId = req.userId;
+    if (!userId) {
+        throw new ApiError(401, "Unauthorized");
+    }
+    const avatarFile = req.file;
+    if (!avatarFile) {
+        throw new ApiError(400, "Please upload an avatar image");
+    }
+    const uploadResult = await uploadOnCloudinary(avatarFile.path);
+    if (!uploadResult) {
+        throw new ApiError(500, "Failed to upload avatar to Cloudinary");
+    }
+    const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+            avatar: uploadResult.secure_url,
+        },
+        select: {
+            id: true,
+            email: true,
+            username: true,
+            avatar: true,
+        },
+    });
+    return res
+        .status(200)
+        .json(new ApiResponse(200, { user: updatedUser }, "Avatar updated successfully"));
 });
 //# sourceMappingURL=user.controller.js.map

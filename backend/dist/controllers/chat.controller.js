@@ -3,6 +3,7 @@ import { prisma } from "../lib/prisma.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { io, onlineUsers } from "../socket/socket.js";
+import { uploadOnCloudinary } from "../utils/Cloudinary.js";
 export const getAllTheUsers = asyncHandler(async (req, res) => {
     const curruntUserId = req.userId;
     const users = await prisma.user.findMany({
@@ -51,7 +52,8 @@ export const getConversations = asyncHandler(async (req, res) => {
 });
 export const sendMessage = asyncHandler(async (req, res) => {
     const { content } = req.body;
-    if (!content?.trim()) {
+    const imageFile = req.file;
+    if (!content?.trim() && !imageFile) {
         throw new ApiError(400, "Message cannot be empty");
     }
     const receiverId = req.params.id;
@@ -67,9 +69,18 @@ export const sendMessage = asyncHandler(async (req, res) => {
     if (senderId === receiverId) {
         throw new ApiError(400, "You cannot message yourself");
     }
+    let imageUrl = undefined;
+    if (imageFile) {
+        const uploadResult = await uploadOnCloudinary(imageFile.path);
+        if (!uploadResult) {
+            throw new ApiError(500, "Failed to upload image to Cloudinary");
+        }
+        imageUrl = uploadResult.secure_url;
+    }
     const message = await prisma.message.create({
         data: {
-            content,
+            content: content?.trim() || null,
+            image: imageUrl || null,
             receiverId,
             senderId
         }
