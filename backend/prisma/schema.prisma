@@ -11,7 +11,6 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
-
 model User {
   id        String   @id @default(uuid())
   username  String
@@ -32,7 +31,7 @@ model Message {
 
   senderId   String
   receiverId String
-
+  
   sender   User @relation("SentMessages", fields: [senderId], references: [id])
   receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id])
 
