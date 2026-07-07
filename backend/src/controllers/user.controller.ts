@@ -4,7 +4,7 @@ import { prisma } from "../lib/prisma.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
-import type { Request, Response } from "express";
+import type { Request, Response,CookieOptions } from "express";
 import { signInSchema, signUpSchema } from "../utils/schemas.js";
 import { uploadOnCloudinary } from "../utils/Cloudinary.js";
 
@@ -47,10 +47,10 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
     const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
         expiresIn: "15d",
     });
-    const options = {
+    const options :CookieOptions  = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "lax" as const
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
     }
     return res
         .status(200)
@@ -112,10 +112,10 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
         expiresIn: "15d",
     });
-    const options = {
+    const options :CookieOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "lax" as const
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
     }
 
     return res
