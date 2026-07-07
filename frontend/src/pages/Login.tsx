@@ -105,7 +105,7 @@ const Login = () => {
 
         {/* Footer Link */}
         <div className="mt-8 text-center border-t border-white/5 pt-6 text-xs text-slate-400 flex items-center justify-center gap-2">
-          New to chatapp?
+          New to chatty?
           <button 
             onClick={() => navigate('/signup')}
             className="text-blue-400 hover:text-blue-300 font-bold transition-colors cursor-pointer hover:underline"

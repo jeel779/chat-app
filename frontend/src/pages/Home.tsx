@@ -14,7 +14,7 @@ const Home = () => {
       {/* Landing Navbar */}
       <header className="w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between relative z-10">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
-          <span className="text-2xl font-extrabold tracking-tight">chatapp</span>
+          <span className="text-2xl font-extrabold tracking-tight">chatty</span>
         </div>
         
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">

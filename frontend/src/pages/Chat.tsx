@@ -57,7 +57,7 @@ const Chat = () => {
             className="w-11 h-11 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-[#1e50ff] flex items-center justify-center cursor-pointer transition-all transform hover:scale-105"
             title="Go to Home"
           >
-            <span className="text-xl font-black">L</span>
+            <MessageSquare className="w-5 h-5" />
           </div>
 
           {/* Action List */}

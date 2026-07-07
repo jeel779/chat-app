@@ -58,7 +58,7 @@ const Signup = () => {
           </div>
           <h2 className="text-3xl font-extrabold text-white tracking-tight">Create Account</h2>
           <p className="text-sm text-slate-300 mt-2 text-center">
-            Get started with chatapp in seconds
+            Get started with chatty in seconds
           </p>
         </div>
 
